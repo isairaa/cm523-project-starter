@@ -1,256 +1,647 @@
 /* WRITE YOUR JS HERE... YOU MAY REQUIRE MORE THAN ONE JS FILE. IF SO SAVE IT SEPARATELY IN THE SCRIPTS DIRECTORY */
 
-
-const themeBtn = document.getElementById('themeBtn');
 const body = document.body;
 
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme === 'dark') {
-  body.classList.add('dark-mode');
+// Cover page
+const coverSection = document.getElementById("cover");
+const enterAppBtn = document.getElementById("enterAppBtn");
+const coverHomeBtn = document.getElementById("coverHomeBtn");
+const coverAboutBtn = document.getElementById("coverAboutBtn");
+const appShell = document.getElementById("appShell");
+
+// Header / nav
+const themeBtn = document.getElementById("themeBtn");
+const logoBtn = document.getElementById("logoBtn");
+const navItems = document.querySelectorAll(".nav-item");
+const sections = document.querySelectorAll(".page-section");
+
+// Home / habits
+const habitsContainer = document.getElementById("habitsContainer");
+const addHabitBtn = document.getElementById("addHabitBtn");
+
+// Modal
+const modal = document.getElementById("habitModal");
+const closeModalBtn = document.getElementById("closeModal");
+const cancelBtn = document.getElementById("cancelBtn");
+const habitForm = document.getElementById("habitForm");
+const dueDayInputs = document.querySelectorAll(".due-day-input");
+
+// Recommended cards
+const recommendedCards = document.querySelectorAll(".recommended-card");
+
+// Categories hover preview
+const categoryPreviewContent = document.getElementById(
+  "categoryPreviewContent"
+);
+const categoryCards = document.querySelectorAll(".category-card");
+
+// Data state
+let habits = JSON.parse(localStorage.getItem("habits")) || [];
+let editingHabitId = null;
+
+// Category metadata
+const categories = {
+  exercise: { name: "Exercise", icon: "🏃‍♀️", color: "#FF6B35" },
+  nutrition: { name: "Nutrition", icon: "🥗", color: "#4CAF50" },
+  study: { name: "Study", icon: "📚", color: "#9C27B0" },
+  wellness: { name: "Wellness", icon: "🧘‍♀️", color: "#FF9800" },
+  sleep: { name: "Sleep", icon: "🛌", color: "#3F51B5" },
+  water: { name: "Hydration", icon: "💧", color: "#00BCD4" },
+  work: { name: "Work", icon: "💼", color: "#F44336" },
+  cooking: { name: "Cooking", icon: "🍳", color: "#FF5722" },
+  reading: { name: "Reading", icon: "📖", color: "#673AB7" },
+  creative: { name: "Creative", icon: "🎨", color: "#E91E63" }
+};
+
+// Category ideas for preview box
+const categoryIdeas = {
+  exercise: {
+    title: "Exercise Ideas",
+    text: "Try a 20-minute walk, a short HIIT session, or stretching before bed."
+  },
+  nutrition: {
+    title: "Nutrition Ideas",
+    text: "Plan a simple meal prep, try a new salad, or log your veggies for the day."
+  },
+  study: {
+    title: "Study Ideas",
+    text: "Review class notes for 15 minutes or complete one practice problem set."
+  },
+  wellness: {
+    title: "Wellness Ideas",
+    text: "Take 5 minutes to meditate, journal, or practice breathing exercises."
+  },
+  sleep: {
+    title: "Sleep Tips",
+    text: "Set a consistent bedtime and avoid screens 30 minutes before sleep."
+  },
+  water: {
+    title: "Hydration Tips",
+    text: "Keep a bottle nearby and drink a glass of water with every meal."
+  },
+  work: {
+    title: "Work Focus",
+    text: "Block 25 minutes for deep work, then take a short break."
+  },
+  cooking: {
+    title: "Recipe Ideas",
+    text: "Try an easy stir-fry, sheet-pan veggies, or a one-pot pasta."
+  },
+  reading: {
+    title: "Reading Suggestions",
+    text: "Read one chapter of a book or a short article that interests you."
+  },
+  creative: {
+    title: "Creative Prompts",
+    text: "Sketch for 10 minutes, write a short paragraph, or take a creative photo."
+  }
+};
+
+// THEME
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+  body.classList.add("dark-mode");
 }
 
-themeBtn.addEventListener('click', () => {
-  body.classList.toggle('dark-mode');
-  const theme = body.classList.contains('dark-mode') ? 'dark' : 'light';
-  localStorage.setItem('theme', theme);
+themeBtn.addEventListener("click", function () {
+  body.classList.toggle("dark-mode");
+  const theme = body.classList.contains("dark-mode") ? "dark" : "light";
+  localStorage.setItem("theme", theme);
 });
 
-const navItems = document.querySelectorAll('.nav-item');
-const sections = document.querySelectorAll('.page-section');
-
-navItems.forEach(item => {
-  item.addEventListener('click', () => {
+// NAVIGATION
+navItems.forEach(function (item) {
+  item.addEventListener("click", function () {
     const target = item.dataset.target;
-    
-    navItems.forEach(nav => nav.classList.remove('nav-active'));
-    item.classList.add('nav-active');
-    
-    sections.forEach(section => {
+
+    navItems.forEach(function (nav) {
+      nav.classList.remove("nav-active");
+    });
+    item.classList.add("nav-active");
+
+    sections.forEach(function (section) {
       if (section.id === target) {
-        section.classList.add('active');
+        section.classList.add("active");
       } else {
-        section.classList.remove('active');
+        section.classList.remove("active");
       }
     });
   });
 });
 
-let habits = JSON.parse(localStorage.getItem('habits')) || [];
-
-const habitsContainer = document.getElementById('habitsContainer');
-const addHabitBtn = document.getElementById('addHabitBtn');
-const modal = document.getElementById('habitModal');
-const closeModal = document.getElementById('closeModal');
-const cancelBtn = document.getElementById('cancelBtn');
-const habitForm = document.getElementById('habitForm');
-
-const categories = {
-  exercise: { icon: '💪', color: '#2563EB', name: 'Exercise' },
-  nutrition: { icon: '🍎', color: '#10B981', name: 'Nutrition' },
-  study: { icon: '📚', color: '#7C3AED', name: 'Study' },
-  wellness: { icon: '🧘', color: '#F59E0B', name: 'Wellness' },
-  sleep: { icon: '🌙', color: '#6366F1', name: 'Sleep' },
-  water: { icon: '💧', color: '#06B6D4', name: 'Hydration' },
-  work: { icon: '💼', color: '#EF4444', name: 'Work' },
-  cooking: { icon: '🍳', color: '#F97316', name: 'Cooking' },
-  reading: { icon: '📖', color: '#8B5CF6', name: 'Reading' },
-  creative: { icon: '🎨', color: '#EC4899', name: 'Creative' }
-};
-
-addHabitBtn.addEventListener('click', () => {
-  modal.classList.add('active');
-  document.body.style.overflow = 'hidden';
+// LOGO -> COVER
+logoBtn.addEventListener("click", function () {
+  appShell.classList.add("hidden");
+  coverSection.style.display = "flex";
+  coverSection.classList.add("active");
 });
 
-closeModal.addEventListener('click', closeModalFunc);
-cancelBtn.addEventListener('click', closeModalFunc);
-modal.addEventListener('click', (e) => {
-  if (e.target === modal) closeModalFunc();
+// COVER -> ENTER APP
+enterAppBtn.addEventListener("click", function () {
+  coverSection.classList.remove("active");
+  coverSection.style.display = "none";
+  appShell.classList.remove("hidden");
 });
 
-function closeModalFunc() {
-  modal.classList.remove('active');
-  document.body.style.overflow = 'auto';
-  habitForm.reset();
+// COVER TABS
+coverHomeBtn.addEventListener("click", function () {
+  enterAppBtn.click();
+  const homeNav = document.querySelector('.nav-item[data-target="home"]');
+  if (homeNav) homeNav.click();
+});
+
+coverAboutBtn.addEventListener("click", function () {
+  enterAppBtn.click();
+  const aboutNav = document.querySelector('.nav-item[data-target="about"]');
+  if (aboutNav) aboutNav.click();
+});
+
+// RECOMMENDED HABITS
+recommendedCards.forEach(function (card) {
+  card.addEventListener("click", function () {
+    const habitName = card.dataset.habit;
+    const habitCategory = card.dataset.category;
+
+    const existingHabit = habits.find(function (h) {
+      return h.name === habitName;
+    });
+
+    if (existingHabit) {
+      showNotification("You already have this habit!", "info");
+      return;
+    }
+
+    const newHabit = {
+      id: Date.now(),
+      name: habitName,
+      category: habitCategory,
+      streak: 0,
+      completedDates: [],
+      dueDays: [0, 1, 2, 3, 4, 5, 6],
+      createdAt: new Date().toISOString()
+    };
+
+    habits.push(newHabit);
+    localStorage.setItem("habits", JSON.stringify(habits));
+    renderHabits();
+    updateProgress();
+    updateStats();
+    showNotification("Habit added successfully!", "success");
+  });
+});
+
+// MODAL HELPERS
+function openModal() {
+  modal.classList.add("active");
+  body.style.overflow = "hidden";
 }
 
-habitForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  
-  const habitName = document.getElementById('habitName').value;
-  const habitCategory = document.getElementById('habitCategory').value;
-  
-  const newHabit = {
-    id: Date.now(),
-    name: habitName,
-    category: habitCategory,
-    streak: 0,
-    completedDates: [],
-    createdAt: new Date().toISOString()
-  };
-  
-  habits.push(newHabit);
-  localStorage.setItem('habits', JSON.stringify(habits));
-  
-  renderHabits();
-  closeModalFunc();
-  showNotification('Habit added successfully! 🎉', 'success');
+function closeModalFunc() {
+  modal.classList.remove("active");
+  body.style.overflow = "auto";
+  habitForm.reset();
+  dueDayInputs.forEach(function (input) {
+    input.checked = false;
+  });
+  editingHabitId = null;
+}
+
+addHabitBtn.addEventListener("click", function () {
+  editingHabitId = null;
+  openModal();
 });
 
+closeModalBtn.addEventListener("click", closeModalFunc);
+cancelBtn.addEventListener("click", closeModalFunc);
+
+modal.addEventListener("click", function (e) {
+  if (e.target === modal) {
+    closeModalFunc();
+  }
+});
+
+// START EDIT HABIT
+function startEditHabit(id) {
+  const habit = habits.find(function (h) {
+    return h.id === id;
+  });
+
+  if (!habit) {
+    return;
+  }
+
+  editingHabitId = id;
+
+  const habitNameInput = document.getElementById("habitName");
+  const habitCategorySelect = document.getElementById("habitCategory");
+
+  habitNameInput.value = habit.name;
+  habitCategorySelect.value = habit.category;
+
+  dueDayInputs.forEach(function (input) {
+    input.checked = false;
+  });
+
+  (habit.dueDays || []).forEach(function (day) {
+    dueDayInputs.forEach(function (input) {
+      if (parseInt(input.value, 10) === day) {
+        input.checked = true;
+      }
+    });
+  });
+
+  openModal();
+}
+
+// FORM SUBMISSION (create or update)
+habitForm.addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const habitNameInput = document.getElementById("habitName");
+  const habitCategorySelect = document.getElementById("habitCategory");
+
+  const habitName = habitNameInput.value.trim();
+  const habitCategory = habitCategorySelect.value;
+
+  const selectedDays = [];
+  dueDayInputs.forEach(function (input) {
+    if (input.checked) {
+      selectedDays.push(parseInt(input.value, 10));
+    }
+  });
+
+  const dueDaysValue =
+    selectedDays.length ? selectedDays : [0, 1, 2, 3, 4, 5, 6];
+
+  if (editingHabitId !== null) {
+    for (let i = 0; i < habits.length; i++) {
+      if (habits[i].id === editingHabitId) {
+        habits[i].name = habitName;
+        habits[i].category = habitCategory;
+        habits[i].dueDays = dueDaysValue;
+        break;
+      }
+    }
+    showNotification("Habit updated!", "success");
+  } else {
+    const newHabit = {
+      id: Date.now(),
+      name: habitName,
+      category: habitCategory,
+      streak: 0,
+      completedDates: [],
+      dueDays: dueDaysValue,
+      createdAt: new Date().toISOString()
+    };
+    habits.push(newHabit);
+    showNotification("Habit added successfully!", "success");
+  }
+
+  localStorage.setItem("habits", JSON.stringify(habits));
+
+  renderHabits();
+  updateProgress();
+  updateStats();
+  closeModalFunc();
+});
+
+// RENDER HABITS
 function renderHabits() {
-  if (habits.length === 0) {
+  if (!habits || habits.length === 0) {
     habitsContainer.innerHTML = `
       <div class="empty-state">
-        <div class="empty-icon">🎯</div>
         <h2 class="empty-title">No habits yet</h2>
-        <p class="empty-text">Start building your momentum by adding your first habit</p>
-        <button class="btn-primary" onclick="document.getElementById('addHabitBtn').click()">
+        <p class="empty-text">
+          Start building your momentum by adding your first habit.
+        </p>
+        <button class="btn-primary" id="emptyStateBtn" type="button">
           Create Your First Habit
         </button>
       </div>
     `;
-    updateProgress();
+
+    const emptyStateBtn = document.getElementById("emptyStateBtn");
+    if (emptyStateBtn) {
+      emptyStateBtn.addEventListener("click", function () {
+        editingHabitId = null;
+        openModal();
+      });
+    }
+
     return;
   }
-  
-  habitsContainer.innerHTML = habits.map(habit => {
-    const categoryData = categories[habit.category];
+
+  habitsContainer.innerHTML = "";
+
+  for (let i = 0; i < habits.length; i++) {
+    const habit = habits[i];
+    const categoryData =
+      categories[habit.category] || {
+        name: "Habit",
+        icon: "✅",
+        color: "#4CAF50"
+      };
+
     const isCompleted = isCompletedToday(habit);
-    
-    return `
-      <article class="habit-card ${isCompleted ? 'habit-completed' : ''}" data-id="${habit.id}">
-        <div class="habit-icon" style="background: ${categoryData.color}15; color: ${categoryData.color};">
-          ${categoryData.icon}
+
+    const daysShort = ["S", "M", "T", "W", "T", "F", "S"];
+    const dueLabel = (habit.dueDays || [])
+      .slice()
+      .sort()
+      .map(function (d) {
+        return daysShort[d];
+      })
+      .join(" ");
+
+    const card = document.createElement("article");
+    card.className = "habit-card";
+    if (isCompleted) {
+      card.classList.add("habit-completed");
+    }
+    card.dataset.id = habit.id;
+
+    card.innerHTML = `
+      <div class="habit-icon" style="border-color: ${categoryData.color};">
+        ${categoryData.icon}
+      </div>
+      <div class="habit-info">
+        <h3 class="habit-name">${habit.name}</h3>
+        <div class="habit-meta">
+          <span class="habit-category">${categoryData.name}</span>
+          ${
+            habit.streak > 0
+              ? `<span class="habit-streak">${habit.streak} day streak</span>`
+              : ""
+          }
         </div>
-        <div class="habit-info">
-          <h3 class="habit-name">${habit.name}</h3>
-          <div class="habit-meta">
-            <span class="habit-category">${categoryData.name}</span>
-            ${habit.streak > 0 ? `
-              <div class="habit-streak">
-                <span class="streak-icon">🔥</span>
-                <span class="streak-text">${habit.streak} day streak</span>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-        <button class="habit-check ${isCompleted ? 'checked' : ''}" onclick="toggleHabit(${habit.id})" aria-label="Mark habit complete">
-          <svg width="28" height="28" viewBox="0 0 28 28">
-            <circle cx="14" cy="14" r="13" stroke="currentColor" stroke-width="2" fill="none"/>
-            ${isCompleted ? '<path d="M8 14l4 4 8-8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' : ''}
-          </svg>
-        </button>
-        <button class="habit-delete" onclick="deleteHabit(${habit.id})" aria-label="Delete habit">
-          <svg width="20" height="20" viewBox="0 0 24 24">
-            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>
-          </svg>
-        </button>
-      </article>
+        ${
+          dueLabel
+            ? `<div class="habit-due-days">Due: ${dueLabel}</div>`
+            : ""
+        }
+      </div>
+      <button
+        class="habit-check ${isCompleted ? "checked" : ""}"
+        data-habit-id="${habit.id}"
+        type="button"
+        aria-label="Mark habit complete"
+      >
+        ${isCompleted ? "✔" : "○"}
+      </button>
+      <button
+        class="habit-edit"
+        data-habit-id="${habit.id}"
+        type="button"
+        aria-label="Edit habit"
+      >
+        ✎
+      </button>
+      <button
+        class="habit-delete"
+        data-habit-id="${habit.id}"
+        type="button"
+        aria-label="Delete habit"
+      >
+        ✕
+      </button>
     `;
-  }).join('');
-  
-  updateProgress();
-  updateStats();
+
+    habitsContainer.appendChild(card);
+  }
+
+  const checkButtons = document.querySelectorAll(".habit-check");
+  checkButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      const habitId = parseInt(button.dataset.habitId, 10);
+      toggleHabit(habitId);
+    });
+  });
+
+  const editButtons = document.querySelectorAll(".habit-edit");
+  editButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      const habitId = parseInt(button.dataset.habitId, 10);
+      startEditHabit(habitId);
+    });
+  });
+
+  const deleteButtons = document.querySelectorAll(".habit-delete");
+  deleteButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      const habitId = parseInt(button.dataset.habitId, 10);
+      deleteHabit(habitId);
+    });
+  });
 }
 
+// HELPERS
 function isCompletedToday(habit) {
   const today = new Date().toDateString();
   return habit.completedDates.includes(today);
 }
 
 function toggleHabit(id) {
-  const habit = habits.find(h => h.id === id);
+  let habit = null;
+
+  for (let i = 0; i < habits.length; i++) {
+    if (habits[i].id === id) {
+      habit = habits[i];
+      break;
+    }
+  }
+
+  if (!habit) {
+    return;
+  }
+
   const today = new Date().toDateString();
-  
+
   if (isCompletedToday(habit)) {
-    habit.completedDates = habit.completedDates.filter(date => date !== today);
+    habit.completedDates = habit.completedDates.filter(function (date) {
+      return date !== today;
+    });
     habit.streak = Math.max(0, habit.streak - 1);
-    showNotification('Habit unmarked', 'info');
+    showNotification("Habit unmarked.", "info");
   } else {
     habit.completedDates.push(today);
-    habit.streak++;
-    showNotification('Great job! Keep it up! 💪', 'success');
+    habit.streak += 1;
+    showNotification("Great job! Keep it up!", "success");
   }
-  
-  localStorage.setItem('habits', JSON.stringify(habits));
+
+  localStorage.setItem("habits", JSON.stringify(habits));
   renderHabits();
+  updateProgress();
+  updateStats();
 }
 
 function deleteHabit(id) {
-  if (confirm('Are you sure you want to delete this habit?')) {
-    habits = habits.filter(h => h.id !== id);
-    localStorage.setItem('habits', JSON.stringify(habits));
-    renderHabits();
-    showNotification('Habit deleted', 'error');
-  }
-}
-
-function updateProgress() {
-  const progressNumber = document.getElementById('progressNumber');
-  const progressPercentage = document.getElementById('progressPercentage');
-  const progressFill = document.getElementById('progressFill');
-  const progressSummary = document.getElementById('progressSummary');
-  
-  if (habits.length === 0) {
-    progressNumber.textContent = '0%';
-    progressPercentage.textContent = '0%';
-    progressFill.style.strokeDashoffset = '314';
-    progressSummary.textContent = 'Add habits to start tracking';
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this habit?"
+  );
+  if (!confirmDelete) {
     return;
   }
-  
-  const completed = habits.filter(isCompletedToday).length;
+
+  habits = habits.filter(function (h) {
+    return h.id !== id;
+  });
+
+  localStorage.setItem("habits", JSON.stringify(habits));
+  renderHabits();
+  updateProgress();
+  updateStats();
+  showNotification("Habit deleted.", "error");
+}
+
+// PROGRESS + STATS
+function updateProgress() {
+  const progressNumber = document.getElementById("progressNumber");
+  const progressPercentage = document.getElementById("progressPercentage");
+  const progressFill = document.getElementById("progressFill");
+  const progressSummary = document.getElementById("progressSummary");
+
+  if (!habits || habits.length === 0) {
+    progressNumber.textContent = "0";
+    progressPercentage.textContent = "0%";
+    if (progressFill) {
+      progressFill.style.strokeDashoffset = 314;
+    }
+    progressSummary.textContent = "Add habits to start tracking.";
+    return;
+  }
+
+  let completed = 0;
+  for (let i = 0; i < habits.length; i++) {
+    if (isCompletedToday(habits[i])) {
+      completed += 1;
+    }
+  }
+
   const total = habits.length;
   const percentage = Math.round((completed / total) * 100);
-  const dashOffset = 314 - (314 * percentage / 100);
-  
-  progressNumber.textContent = `${percentage}%`;
-  progressPercentage.textContent = `${percentage}%`;
-  progressFill.style.strokeDashoffset = dashOffset;
-  progressSummary.textContent = `${completed} of ${total} habits completed today`;
+  const dashOffset = 314 - (314 * percentage) / 100;
+
+  progressNumber.textContent = String(percentage);
+  progressPercentage.textContent = percentage + "%";
+
+  if (progressFill) {
+    progressFill.style.strokeDashoffset = dashOffset;
+  }
+
+  progressSummary.textContent =
+    completed + " of " + total + " habits completed today.";
 }
 
 function updateStats() {
-  const totalHabits = document.getElementById('totalHabits');
-  const longestStreak = document.getElementById('longestStreak');
-  const completedToday = document.getElementById('completedToday');
-  const totalCompletions = document.getElementById('totalCompletions');
-  
+  const totalHabits = document.getElementById("totalHabits");
+  const longestStreak = document.getElementById("longestStreak");
+  const completedToday = document.getElementById("completedToday");
+  const totalCompletions = document.getElementById("totalCompletions");
+
   if (totalHabits) {
-    totalHabits.textContent = habits.length;
-    longestStreak.textContent = Math.max(...habits.map(h => h.streak), 0);
-    completedToday.textContent = habits.filter(isCompletedToday).length;
-    totalCompletions.textContent = habits.reduce((sum, h) => sum + h.completedDates.length, 0);
+    totalHabits.textContent = String(habits.length);
+  }
+
+  let maxStreak = 0;
+  let completedCount = 0;
+  let totalCount = 0;
+
+  for (let i = 0; i < habits.length; i++) {
+    if (habits[i].streak > maxStreak) {
+      maxStreak = habits[i].streak;
+    }
+    if (isCompletedToday(habits[i])) {
+      completedCount += 1;
+    }
+    totalCount += habits[i].completedDates.length;
+  }
+
+  if (longestStreak) {
+    longestStreak.textContent = String(maxStreak);
+  }
+  if (completedToday) {
+    completedToday.textContent = String(completedCount);
+  }
+  if (totalCompletions) {
+    totalCompletions.textContent = String(totalCount);
   }
 }
 
+// CATEGORY HOVER PREVIEW
+categoryCards.forEach(function (card) {
+  card.addEventListener("mouseenter", function () {
+    const nameElement = card.querySelector(".category-name");
+    if (!nameElement) {
+      return;
+    }
+    const key = nameElement.textContent.trim().toLowerCase();
+
+    let ideaKey = null;
+    if (key === "exercise") ideaKey = "exercise";
+    else if (key === "nutrition") ideaKey = "nutrition";
+    else if (key === "study") ideaKey = "study";
+    else if (key === "wellness") ideaKey = "wellness";
+    else if (key === "sleep") ideaKey = "sleep";
+    else if (key === "hydration") ideaKey = "water";
+    else if (key === "work") ideaKey = "work";
+    else if (key === "cooking") ideaKey = "cooking";
+    else if (key === "reading") ideaKey = "reading";
+    else if (key === "creative") ideaKey = "creative";
+
+    if (!ideaKey || !categoryIdeas[ideaKey]) {
+      return;
+    }
+
+    const idea = categoryIdeas[ideaKey];
+
+    categoryPreviewContent.innerHTML = `
+      <div>
+        <div class="category-preview-title">${idea.title}</div>
+        <div class="category-preview-text">${idea.text}</div>
+      </div>
+    `;
+  });
+
+  card.addEventListener("mouseleave", function () {
+    categoryPreviewContent.innerHTML = `
+      <p class="category-preview-placeholder">
+        Hover a category to see ideas, recipes, or book recommendations.
+      </p>
+    `;
+  });
+});
+
+// NOTIFICATIONS
 function showNotification(message, type) {
-  const notification = document.createElement('div');
-  notification.className = `notification notification-${type}`;
-  
+  const notification = document.createElement("div");
+  notification.className = "notification notification-" + type;
+
   const icons = {
-    success: '✓',
-    error: '✕',
-    info: 'ℹ'
+    success: "✓",
+    error: "!",
+    info: "i"
   };
-  
+
   notification.innerHTML = `
     <span class="notification-icon">${icons[type]}</span>
     <span class="notification-text">${message}</span>
   `;
-  
+
   document.body.appendChild(notification);
-  
-  setTimeout(() => notification.classList.add('show'), 10);
-  
-  setTimeout(() => {
-    notification.classList.remove('show');
-    setTimeout(() => notification.remove(), 300);
+
+  setTimeout(function () {
+    notification.classList.add("show");
+  }, 10);
+
+  setTimeout(function () {
+    notification.classList.remove("show");
+    setTimeout(function () {
+      notification.remove();
+    }, 300);
   }, 3000);
 }
 
-
+// INITIALIZE
 renderHabits();
-
-window.toggleHabit = toggleHabit;
-window.deleteHabit = deleteHabit;
+updateProgress();
+updateStats();
