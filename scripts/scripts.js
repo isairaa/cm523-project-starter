@@ -40,7 +40,7 @@ creative: { name: "Creative", icon: "🎨", color: "#E91E63" }
 const categoryIdeas = {
 exercise: {
 title: "Exercise Ideas",
-text: "Try a 20-minute walk or stretching before bed."
+text: "Try a 20-minute walk, a short HIIT session, or stretching before bed."
 },
 nutrition: {
 title: "Nutrition Ideas",
@@ -474,7 +474,15 @@ totalCompletions.textContent = String(totalCount);
 }
 
 categoryCards.forEach(function (card) {
-card.addEventListener("mouseenter", function () {
+card.addEventListener("click", function () {
+// Remove active class from all cards
+categoryCards.forEach(function (c) {
+c.classList.remove("active");
+});
+
+// Add active class to clicked card
+card.classList.add("active");
+
 const nameElement = card.querySelector(".category-name");
 if (!nameElement) {
 return;
@@ -500,13 +508,6 @@ categoryPreviewContent.innerHTML = `
 <div class="category-preview-title">${idea.title}</div>
 <div class="category-preview-text">${idea.text}</div>
 </div>
-`;
-});
-card.addEventListener("mouseleave", function () {
-categoryPreviewContent.innerHTML = `
-<p class="category-preview-placeholder">
-Hover a category to see ideas, recipes, or book recommendations.
-</p>
 `;
 });
 });
