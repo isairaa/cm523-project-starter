@@ -1,50 +1,34 @@
 /* WRITE YOUR JS HERE... YOU MAY REQUIRE MORE THAN ONE JS FILE. IF SO SAVE IT SEPARATELY IN THE SCRIPTS DIRECTORY */
 
 const body = document.body;
-
-// Cover page
 const coverSection = document.getElementById("cover");
 const enterAppBtn = document.getElementById("enterAppBtn");
 const coverHomeBtn = document.getElementById("coverHomeBtn");
 const coverAboutBtn = document.getElementById("coverAboutBtn");
 const appShell = document.getElementById("appShell");
-
-// Header / nav
 const themeBtn = document.getElementById("themeBtn");
 const logoBtn = document.getElementById("logoBtn");
 const navItems = document.querySelectorAll(".nav-item");
 const sections = document.querySelectorAll(".page-section");
-
-// Home / habits
 const habitsContainer = document.getElementById("habitsContainer");
 const addHabitBtn = document.getElementById("addHabitBtn");
-
-// Modal
 const modal = document.getElementById("habitModal");
 const closeModalBtn = document.getElementById("closeModal");
 const cancelBtn = document.getElementById("cancelBtn");
 const habitForm = document.getElementById("habitForm");
 const dueDayInputs = document.querySelectorAll(".due-day-input");
-
-// Recommended cards
 const recommendedCards = document.querySelectorAll(".recommended-card");
-
-// Categories hover preview
-const categoryPreviewContent = document.getElementById(
-  "categoryPreviewContent"
-);
+const categoryPreviewContent = document.getElementById("categoryPreviewContent");
 const categoryCards = document.querySelectorAll(".category-card");
 
-// Data state
 let habits = JSON.parse(localStorage.getItem("habits")) || [];
 let editingHabitId = null;
 
-// Category metadata
 const categories = {
-  exercise: { name: "Exercise", icon: "🏃‍♀️", color: "#FF6B35" },
+  exercise: { name: "Exercise", icon: "⚡", color: "#FF6B35" },
   nutrition: { name: "Nutrition", icon: "🥗", color: "#4CAF50" },
   study: { name: "Study", icon: "📚", color: "#9C27B0" },
-  wellness: { name: "Wellness", icon: "🧘‍♀️", color: "#FF9800" },
+  wellness: { name: "Wellness", icon: "😌", color: "#FF9800" },
   sleep: { name: "Sleep", icon: "🛌", color: "#3F51B5" },
   water: { name: "Hydration", icon: "💧", color: "#00BCD4" },
   work: { name: "Work", icon: "💼", color: "#F44336" },
@@ -53,7 +37,6 @@ const categories = {
   creative: { name: "Creative", icon: "🎨", color: "#E91E63" }
 };
 
-// Category ideas for preview box
 const categoryIdeas = {
   exercise: {
     title: "Exercise Ideas",
@@ -97,7 +80,6 @@ const categoryIdeas = {
   }
 };
 
-// THEME
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme === "dark") {
   body.classList.add("dark-mode");
@@ -109,16 +91,13 @@ themeBtn.addEventListener("click", function () {
   localStorage.setItem("theme", theme);
 });
 
-// NAVIGATION
 navItems.forEach(function (item) {
   item.addEventListener("click", function () {
     const target = item.dataset.target;
-
     navItems.forEach(function (nav) {
       nav.classList.remove("nav-active");
     });
     item.classList.add("nav-active");
-
     sections.forEach(function (section) {
       if (section.id === target) {
         section.classList.add("active");
@@ -129,21 +108,18 @@ navItems.forEach(function (item) {
   });
 });
 
-// LOGO -> COVER
 logoBtn.addEventListener("click", function () {
   appShell.classList.add("hidden");
   coverSection.style.display = "flex";
   coverSection.classList.add("active");
 });
 
-// COVER -> ENTER APP
 enterAppBtn.addEventListener("click", function () {
   coverSection.classList.remove("active");
   coverSection.style.display = "none";
   appShell.classList.remove("hidden");
 });
 
-// COVER TABS
 coverHomeBtn.addEventListener("click", function () {
   enterAppBtn.click();
   const homeNav = document.querySelector('.nav-item[data-target="home"]');
@@ -156,21 +132,17 @@ coverAboutBtn.addEventListener("click", function () {
   if (aboutNav) aboutNav.click();
 });
 
-// RECOMMENDED HABITS
 recommendedCards.forEach(function (card) {
   card.addEventListener("click", function () {
     const habitName = card.dataset.habit;
     const habitCategory = card.dataset.category;
-
     const existingHabit = habits.find(function (h) {
       return h.name === habitName;
     });
-
     if (existingHabit) {
       showNotification("You already have this habit!", "info");
       return;
     }
-
     const newHabit = {
       id: Date.now(),
       name: habitName,
@@ -180,7 +152,6 @@ recommendedCards.forEach(function (card) {
       dueDays: [0, 1, 2, 3, 4, 5, 6],
       createdAt: new Date().toISOString()
     };
-
     habits.push(newHabit);
     localStorage.setItem("habits", JSON.stringify(habits));
     renderHabits();
@@ -190,7 +161,6 @@ recommendedCards.forEach(function (card) {
   });
 });
 
-// MODAL HELPERS
 function openModal() {
   modal.classList.add("active");
   body.style.overflow = "hidden";
@@ -220,28 +190,21 @@ modal.addEventListener("click", function (e) {
   }
 });
 
-// START EDIT HABIT
 function startEditHabit(id) {
   const habit = habits.find(function (h) {
     return h.id === id;
   });
-
   if (!habit) {
     return;
   }
-
   editingHabitId = id;
-
   const habitNameInput = document.getElementById("habitName");
   const habitCategorySelect = document.getElementById("habitCategory");
-
   habitNameInput.value = habit.name;
   habitCategorySelect.value = habit.category;
-
   dueDayInputs.forEach(function (input) {
     input.checked = false;
   });
-
   (habit.dueDays || []).forEach(function (day) {
     dueDayInputs.forEach(function (input) {
       if (parseInt(input.value, 10) === day) {
@@ -249,30 +212,23 @@ function startEditHabit(id) {
       }
     });
   });
-
   openModal();
 }
 
-// FORM SUBMISSION (create or update)
 habitForm.addEventListener("submit", function (e) {
   e.preventDefault();
-
   const habitNameInput = document.getElementById("habitName");
   const habitCategorySelect = document.getElementById("habitCategory");
-
   const habitName = habitNameInput.value.trim();
   const habitCategory = habitCategorySelect.value;
-
   const selectedDays = [];
   dueDayInputs.forEach(function (input) {
     if (input.checked) {
       selectedDays.push(parseInt(input.value, 10));
     }
   });
-
-  const dueDaysValue =
-    selectedDays.length ? selectedDays : [0, 1, 2, 3, 4, 5, 6];
-
+  const dueDaysValue = selectedDays.length ? selectedDays : [0, 1, 2, 3, 4, 5, 6];
+  
   if (editingHabitId !== null) {
     for (let i = 0; i < habits.length; i++) {
       if (habits[i].id === editingHabitId) {
@@ -296,30 +252,23 @@ habitForm.addEventListener("submit", function (e) {
     habits.push(newHabit);
     showNotification("Habit added successfully!", "success");
   }
-
   localStorage.setItem("habits", JSON.stringify(habits));
-
   renderHabits();
   updateProgress();
   updateStats();
   closeModalFunc();
 });
 
-// RENDER HABITS
 function renderHabits() {
   if (!habits || habits.length === 0) {
     habitsContainer.innerHTML = `
-      <div class="empty-state">
-        <h2 class="empty-title">No habits yet</h2>
-        <p class="empty-text">
-          Start building your momentum by adding your first habit.
-        </p>
-        <button class="btn-primary" id="emptyStateBtn" type="button">
-          Create Your First Habit
-        </button>
-      </div>
-    `;
-
+<div class="empty-state">
+<h2 class="empty-title">No habits yet</h2>
+<button class="btn-primary" id="emptyStateBtn" type="button">
+Create Your First Habit
+</button>
+</div>
+`;
     const emptyStateBtn = document.getElementById("emptyStateBtn");
     if (emptyStateBtn) {
       emptyStateBtn.addEventListener("click", function () {
@@ -327,23 +276,18 @@ function renderHabits() {
         openModal();
       });
     }
-
     return;
   }
-
+  
   habitsContainer.innerHTML = "";
-
   for (let i = 0; i < habits.length; i++) {
     const habit = habits[i];
-    const categoryData =
-      categories[habit.category] || {
-        name: "Habit",
-        icon: "✅",
-        color: "#4CAF50"
-      };
-
+    const categoryData = categories[habit.category] || {
+      name: "Habit",
+      icon: "✅",
+      color: "#4CAF50"
+    };
     const isCompleted = isCompletedToday(habit);
-
     const daysShort = ["S", "M", "T", "W", "T", "F", "S"];
     const dueLabel = (habit.dueDays || [])
       .slice()
@@ -352,63 +296,53 @@ function renderHabits() {
         return daysShort[d];
       })
       .join(" ");
-
+    
     const card = document.createElement("article");
     card.className = "habit-card";
     if (isCompleted) {
       card.classList.add("habit-completed");
     }
     card.dataset.id = habit.id;
-
     card.innerHTML = `
-      <div class="habit-icon" style="border-color: ${categoryData.color};">
-        ${categoryData.icon}
-      </div>
-      <div class="habit-info">
-        <h3 class="habit-name">${habit.name}</h3>
-        <div class="habit-meta">
-          <span class="habit-category">${categoryData.name}</span>
-          ${
-            habit.streak > 0
-              ? `<span class="habit-streak">${habit.streak} day streak</span>`
-              : ""
-          }
-        </div>
-        ${
-          dueLabel
-            ? `<div class="habit-due-days">Due: ${dueLabel}</div>`
-            : ""
-        }
-      </div>
-      <button
-        class="habit-check ${isCompleted ? "checked" : ""}"
-        data-habit-id="${habit.id}"
-        type="button"
-        aria-label="Mark habit complete"
-      >
-        ${isCompleted ? "✔" : "○"}
-      </button>
-      <button
-        class="habit-edit"
-        data-habit-id="${habit.id}"
-        type="button"
-        aria-label="Edit habit"
-      >
-        ✎
-      </button>
-      <button
-        class="habit-delete"
-        data-habit-id="${habit.id}"
-        type="button"
-        aria-label="Delete habit"
-      >
-        ✕
-      </button>
-    `;
-
+<div class="habit-icon" style="border-color: ${categoryData.color};">
+${categoryData.icon}
+</div>
+<div class="habit-info">
+<h3 class="habit-name">${habit.name}</h3>
+<div class="habit-meta">
+<span class="habit-category">${categoryData.name}</span>
+${habit.streak > 0 ? `<span class="habit-streak">${habit.streak} day streak</span>` : ""}
+</div>
+${dueLabel ? `<div class="habit-due-days">Due: ${dueLabel}</div>` : ""}
+</div>
+<button
+class="habit-check ${isCompleted ? "checked" : ""}"
+data-habit-id="${habit.id}"
+type="button"
+aria-label="Mark habit complete"
+>
+${isCompleted ? "✔" : "○"}
+</button>
+<button
+class="habit-edit"
+data-habit-id="${habit.id}"
+type="button"
+aria-label="Edit habit"
+>
+✎
+</button>
+<button
+class="habit-delete"
+data-habit-id="${habit.id}"
+type="button"
+aria-label="Delete habit"
+>
+✕
+</button>
+`;
     habitsContainer.appendChild(card);
   }
-
+  
   const checkButtons = document.querySelectorAll(".habit-check");
   checkButtons.forEach(function (button) {
     button.addEventListener("click", function () {
@@ -416,7 +350,7 @@ function renderHabits() {
       toggleHabit(habitId);
     });
   });
-
+  
   const editButtons = document.querySelectorAll(".habit-edit");
   editButtons.forEach(function (button) {
     button.addEventListener("click", function () {
@@ -424,7 +358,7 @@ function renderHabits() {
       startEditHabit(habitId);
     });
   });
-
+  
   const deleteButtons = document.querySelectorAll(".habit-delete");
   deleteButtons.forEach(function (button) {
     button.addEventListener("click", function () {
@@ -434,7 +368,6 @@ function renderHabits() {
   });
 }
 
-// HELPERS
 function isCompletedToday(habit) {
   const today = new Date().toDateString();
   return habit.completedDates.includes(today);
@@ -442,20 +375,16 @@ function isCompletedToday(habit) {
 
 function toggleHabit(id) {
   let habit = null;
-
   for (let i = 0; i < habits.length; i++) {
     if (habits[i].id === id) {
       habit = habits[i];
       break;
     }
   }
-
   if (!habit) {
     return;
   }
-
   const today = new Date().toDateString();
-
   if (isCompletedToday(habit)) {
     habit.completedDates = habit.completedDates.filter(function (date) {
       return date !== today;
@@ -467,7 +396,6 @@ function toggleHabit(id) {
     habit.streak += 1;
     showNotification("Great job! Keep it up!", "success");
   }
-
   localStorage.setItem("habits", JSON.stringify(habits));
   renderHabits();
   updateProgress();
@@ -475,17 +403,13 @@ function toggleHabit(id) {
 }
 
 function deleteHabit(id) {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this habit?"
-  );
+  const confirmDelete = window.confirm("Are you sure you want to delete this habit?");
   if (!confirmDelete) {
     return;
   }
-
   habits = habits.filter(function (h) {
     return h.id !== id;
   });
-
   localStorage.setItem("habits", JSON.stringify(habits));
   renderHabits();
   updateProgress();
@@ -493,13 +417,12 @@ function deleteHabit(id) {
   showNotification("Habit deleted.", "error");
 }
 
-// PROGRESS + STATS
 function updateProgress() {
   const progressNumber = document.getElementById("progressNumber");
   const progressPercentage = document.getElementById("progressPercentage");
   const progressFill = document.getElementById("progressFill");
   const progressSummary = document.getElementById("progressSummary");
-
+  
   if (!habits || habits.length === 0) {
     progressNumber.textContent = "0";
     progressPercentage.textContent = "0%";
@@ -509,27 +432,22 @@ function updateProgress() {
     progressSummary.textContent = "Add habits to start tracking.";
     return;
   }
-
+  
   let completed = 0;
   for (let i = 0; i < habits.length; i++) {
     if (isCompletedToday(habits[i])) {
       completed += 1;
     }
   }
-
   const total = habits.length;
   const percentage = Math.round((completed / total) * 100);
   const dashOffset = 314 - (314 * percentage) / 100;
-
   progressNumber.textContent = String(percentage);
   progressPercentage.textContent = percentage + "%";
-
   if (progressFill) {
     progressFill.style.strokeDashoffset = dashOffset;
   }
-
-  progressSummary.textContent =
-    completed + " of " + total + " habits completed today.";
+  progressSummary.textContent = completed + " of " + total + " habits completed today.";
 }
 
 function updateStats() {
@@ -537,15 +455,14 @@ function updateStats() {
   const longestStreak = document.getElementById("longestStreak");
   const completedToday = document.getElementById("completedToday");
   const totalCompletions = document.getElementById("totalCompletions");
-
+  
   if (totalHabits) {
     totalHabits.textContent = String(habits.length);
   }
-
+  
   let maxStreak = 0;
   let completedCount = 0;
   let totalCount = 0;
-
   for (let i = 0; i < habits.length; i++) {
     if (habits[i].streak > maxStreak) {
       maxStreak = habits[i].streak;
@@ -555,7 +472,7 @@ function updateStats() {
     }
     totalCount += habits[i].completedDates.length;
   }
-
+  
   if (longestStreak) {
     longestStreak.textContent = String(maxStreak);
   }
@@ -567,7 +484,6 @@ function updateStats() {
   }
 }
 
-// CATEGORY HOVER PREVIEW
 categoryCards.forEach(function (card) {
   card.addEventListener("mouseenter", function () {
     const nameElement = card.querySelector(".category-name");
@@ -575,7 +491,6 @@ categoryCards.forEach(function (card) {
       return;
     }
     const key = nameElement.textContent.trim().toLowerCase();
-
     let ideaKey = null;
     if (key === "exercise") ideaKey = "exercise";
     else if (key === "nutrition") ideaKey = "nutrition";
@@ -587,52 +502,44 @@ categoryCards.forEach(function (card) {
     else if (key === "cooking") ideaKey = "cooking";
     else if (key === "reading") ideaKey = "reading";
     else if (key === "creative") ideaKey = "creative";
-
+    
     if (!ideaKey || !categoryIdeas[ideaKey]) {
       return;
     }
-
     const idea = categoryIdeas[ideaKey];
-
     categoryPreviewContent.innerHTML = `
-      <div>
-        <div class="category-preview-title">${idea.title}</div>
-        <div class="category-preview-text">${idea.text}</div>
-      </div>
-    `;
+<div>
+<div class="category-preview-title">${idea.title}</div>
+<div class="category-preview-text">${idea.text}</div>
+</div>
+`;
   });
-
+  
   card.addEventListener("mouseleave", function () {
     categoryPreviewContent.innerHTML = `
-      <p class="category-preview-placeholder">
-        Hover a category to see ideas, recipes, or book recommendations.
-      </p>
-    `;
+<p class="category-preview-placeholder">
+Hover a category to see ideas, recipes, or book recommendations.
+</p>
+`;
   });
 });
 
-// NOTIFICATIONS
 function showNotification(message, type) {
   const notification = document.createElement("div");
   notification.className = "notification notification-" + type;
-
   const icons = {
     success: "✓",
     error: "!",
     info: "i"
   };
-
   notification.innerHTML = `
-    <span class="notification-icon">${icons[type]}</span>
-    <span class="notification-text">${message}</span>
-  `;
-
+<span class="notification-icon">${icons[type]}</span>
+<span class="notification-text">${message}</span>
+`;
   document.body.appendChild(notification);
-
   setTimeout(function () {
     notification.classList.add("show");
   }, 10);
-
   setTimeout(function () {
     notification.classList.remove("show");
     setTimeout(function () {
@@ -641,7 +548,6 @@ function showNotification(message, type) {
   }, 3000);
 }
 
-// INITIALIZE
 renderHabits();
 updateProgress();
 updateStats();
