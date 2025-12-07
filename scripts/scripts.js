@@ -40,7 +40,7 @@ creative: { name: "Creative", icon: "🎨", color: "#E91E63" }
 const categoryIdeas = {
 exercise: {
 title: "Exercise Ideas",
-text: "Try a 20-minute walk, a short HIIT session, or stretching before bed."
+text: "Try a 20-minute walk or stretching before bed."
 },
 nutrition: {
 title: "Nutrition Ideas",

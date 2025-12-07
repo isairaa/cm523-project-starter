@@ -3,8 +3,7 @@
 /* ===== NEXT WRITE GLOBAL STYLES, THEN USE MEDIA QUERIES FOR LAYOUT/STYLE ADJUSTMENTS ===== */
 /* ===== STARTER CSS BELOW FOR body AND p IS JUST AN EXAMPLE... YOU MAY DELETE IT ===== */
 /* Updated to a more characterful but still clean font */
-@import
-url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap");
 
 /* DESIGN TOKENS - LIGHT MODE */
 :root {
@@ -250,6 +249,8 @@ color: var(--text-primary);
 background: none;
 border: none;
 cursor: pointer;
+position: relative;
+z-index: 10;
 }
 .logo-icon {
 width: 28px;
@@ -267,6 +268,7 @@ background-clip: text;
 .top-nav {
 display: flex;
 gap: var(--space-sm);
+justify-content: flex-start;
 }
 .nav-link {
 display: flex;
@@ -310,6 +312,7 @@ font-size: 1.25rem;
 transition: all var(--transition-quick);
 position: relative;
 overflow: hidden;
+z-index: 10;
 }
 .theme-btn:hover {
 transform: scale(1.05) rotate(8deg);
@@ -405,6 +408,11 @@ align-items: center;
 justify-content: space-between;
 margin-bottom: var(--space-lg);
 }
+.progress-text {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
 .progress-number {
 font-size: 4rem;
 font-weight: 800;
@@ -417,6 +425,7 @@ background-clip: text;
 margin-top: var(--space-sm);
 font-weight: 600;
 color: var(--text-secondary);
+text-align: center;
 }
 .progress-circle {
 position: relative;
