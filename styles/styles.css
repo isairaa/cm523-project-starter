@@ -5,7 +5,7 @@
 /* Updated to a more characterful but still clean font */
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap");
 
-/* DESIGN TOKENS - LIGHT MODE */
+/* LIGHT MODE */
 :root {
 --color-primary: #2d5016;
 --color-primary-dark: #1a3009;
@@ -40,7 +40,7 @@
 --transition-standard: 300ms;
 }
 
-/* DARK MODE OVERRIDES */
+/* DARK MODE  */
 body.dark-mode {
 --bg-secondary: #0d1a0a;
 --bg-card: #182518;
@@ -106,7 +106,7 @@ overflow-x: hidden;
 display: none;
 }
 
-/* COVER PAGE — stairs gradient background */
+/* COVER PAGE  */
 .cover-section {
 position: relative;
 min-height: 100vh;
@@ -942,7 +942,7 @@ color: var(--category-color);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xl);
-  margin-bottom: var(--space-2xl); /* add bottom space under the grid */
+  margin-bottom: var(--space-xl);
 }
 
 .about-card {
@@ -951,7 +951,7 @@ color: var(--category-color);
   border: 2px solid var(--border-color);
   padding: var(--space-xl);
   box-shadow: 0 4px 12px var(--shadow);
-  margin-bottom: var(--space-xl); /* add vertical spacing between cards when stacked */
+  margin-bottom: var(--space-xl);
 }
 
 #about .page-header {
